@@ -48,7 +48,7 @@
 </nav>
 <nav>
     {{#if user}}
-    <div class="m-2">Bienvenido <a href="/profile">{{user.first_name}}!</a></div>
+    <div class="m-2">Bienvenido <a href="/profile">{{user.first_name}}!</a> <p>Rol: {{user.role}}</p></div>
     {{else}}
     {{/if}}
 </nav>

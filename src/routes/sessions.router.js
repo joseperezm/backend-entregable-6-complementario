@@ -6,9 +6,17 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
-        const user = new User({ first_name, last_name, email, age, password: password }); 
+        const role = 'usuario'; 
+        const user = new User({ 
+            first_name, 
+            last_name, 
+            email, 
+            age, 
+            password: password, 
+            role
+        }); 
         await user.save();
-        console.log('Registro exitoso para:', email); 
+        console.log('Registro exitoso para:', email, 'Rol:', role); 
         res.redirect('/login');
     } catch (error) {
         console.log('Error al registrar el usuario:', error);
@@ -18,19 +26,35 @@ router.post('/register', async (req, res) => {
 
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
+
+    if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+        req.session.user = {
+            email,
+            role: 'admin',
+            first_name: 'Admin',
+            last_name: 'CoderHouse',
+            age: '9999'
+        };
+        console.log('Inicio de sesión exitoso para:', email, 'Rol: admin');
+        return res.redirect('/products');
+    }
+
     try {
         const user = await User.findOne({ email: email });
-        if (user) {
-            if (password === user.password) {
-                req.session.user = user;
-                console.log('Inicio de sesión exitoso para:', email);
-                res.redirect('/products');
-            } else {
-                console.log('Intento de inicio de sesión fallido para:', email, '- Contraseña incorrecta');
-                res.redirect('/login');
-            }
+        if (user && password === user.password) {
+            req.session.user = {
+                id: user._id,
+                first_name: user.first_name,
+                last_name: user.last_name,
+                email: user.email,
+                age: user.age,
+                role: 'usuario'
+            };
+
+            console.log('Inicio de sesión exitoso para:', email, 'Rol: usuario');
+            res.redirect('/products');
         } else {
-            console.log('Intento de inicio de sesión fallido - No se encontró el correo:', email);
+            console.log('Intento de inicio de sesión fallido para:', email, '- Contraseña incorrecta o usuario no encontrado');
             res.redirect('/login');
         }
     } catch (error) {
