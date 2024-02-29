@@ -95,14 +95,14 @@ router.put("/carts/:cid/product/:pid", async (req, res) => {
 
 router.delete("/carts/:cid", async (req, res) => {
     try {
-        const success = await cartManager.deleteCart(req.params.cid);
+        const success = await cartManager.emptyCart(req.params.cid);
         if (success) {
-            res.json({ message: "Carrito eliminado correctamente" });
+            res.json({ message: "Carrito vaciado correctamente" });
         } else {
             res.status(404).json({ message: "Carrito no encontrado" });
         }
     } catch (error) {
-        console.error("Error al eliminar el carrito...", error);
+        console.error("Error al vaciar el carrito...", error);
         res.status(500).json({ error: "Error del servidor" });
     }
 });

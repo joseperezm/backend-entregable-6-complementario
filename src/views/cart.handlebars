@@ -13,6 +13,7 @@
                     <button class="delete-product-button btn btn-danger mt-2 mb-2" data-cart-id="{{../cart._id}}" data-product-id="{{this.productId._id}}">Eliminar producto</button>
                 </div>
             {{/each}}
+            <button class="delete-cart-button btn btn-danger mt-2 mb-2 w-100" data-cart-id="{{cart._id}}">Vaciar carrito</button>
         </div>
         <div class="bg-primary rounded text-center m-3 p-2">
             <h3>Total del Carrito: ${{totalCart cart.products}}</h3>
@@ -25,4 +26,4 @@
 </div>
 
 <script src="/js/deleteProduct.js"></script>
-
+<script src="/js/emptyCart.js"></script>

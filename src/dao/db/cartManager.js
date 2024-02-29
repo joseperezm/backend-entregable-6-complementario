@@ -187,6 +187,30 @@ class CartManager {
             console.error("Error al actualizar el carrito con nuevos productos", error);
             throw error;
         }
+    }
+    
+    async emptyCart(cartId) {
+        try {
+            const cart = await Cart.findById(cartId);
+            if (!cart) {
+                console.log('Carrito no encontrado');
+                return { success: false, message: 'Carrito no encontrado' };
+            }
+    
+            cart.products = [];
+    
+            await cart.save();
+    
+            return { success: true, message: 'Carrito vaciado correctamente', cart: cart };
+        } catch (error) {
+            if (error instanceof CastError) {
+                console.error('ID incorrecto:', error);
+                return { success: false, message: 'ID incorrecto de carrito' };
+            } else {
+                console.error('Error vaciando el carrito:', error);
+                throw error;
+            }
+        }
     }    
           
 }
