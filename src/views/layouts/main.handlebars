@@ -46,6 +46,12 @@
     </div>
   </div>
 </nav>
+<nav>
+    {{#if user}}
+    <div class="m-2">Bienvenido <a href="/profile">{{user.first_name}}!</a></div>
+    {{else}}
+    {{/if}}
+</nav>
 <div>{{{body}}}</div>
     <footer class="footer mt-auto py-3 text-center" id="footer">
     <div class="container">

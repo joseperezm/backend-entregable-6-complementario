@@ -1,11 +1,15 @@
 const express = require('express');
+const session = require('express-session');
 const exphbs = require("express-handlebars");
 const socket = require("socket.io");
 const mongoose = require('mongoose');
+const MongoStore = require('connect-mongo');
+const cookieParser = require('cookie-parser');
 const PUERTO = 8080;
 const productsRouter = require("./routes/products.router.js");
 const cartsRouter = require("./routes/carts.router.js");
 const viewsRouter = require("./routes/views.router.js");
+const sessionsRouter = require('./routes/sessions.router.js');
 
 const app = express();
 
@@ -18,6 +22,22 @@ app.use(express.urlencoded({
 }));
 
 app.use(express.json());
+
+app.use(cookieParser());
+
+app.use(session({
+  secret: "s3cr3t0sup3r53cr3t0",
+  resave: true,
+  saveUninitialized: true,
+  store: MongoStore.create({ mongoUrl: 'mongodb+srv://coderhouse:ihOXSjjIqf0DM7xT@jjpm.envjeyh.mongodb.net/ecommerce?retryWrites=true&w=majority', ttl: 100})
+}));
+
+app.use((req, res, next) => {
+    if (req.session.user) {
+        res.locals.user = req.session.user;
+    }
+    next();
+});
 
 app.use(express.static("./src/public"));
 
@@ -41,6 +61,8 @@ app.set("views", "./src/views");
 app.use("/api", productsRouter);
 app.use("/api", cartsRouter);
 app.use("/", viewsRouter);
+
+app.use('/api/sessions', sessionsRouter);
 
 const server = app.listen(PUERTO, () => {
     console.log(`Servidor escuchando en el puerto ${PUERTO}`);
@@ -92,4 +114,5 @@ io.on('connection', (socket) => {
             console.error('Error guardando el mensaje', error);
         }
     });
+
 });

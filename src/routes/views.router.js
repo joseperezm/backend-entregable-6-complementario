@@ -10,11 +10,17 @@ const productManager = new ProductManager();
 const CartManager = require("../dao/db/cartManager.js");
 const cartManager = new CartManager();
 
-router.get("/", (req, res) => {
+const redirectIfNotLoggedIn = require('../middleware/auth.js');
+const redirectIfLoggedIn = require('../middleware/loggedIn.js');
+
+const bcrypt = require('bcrypt');
+const User = require('../dao/models/user-mongoose.js');
+
+router.get("/", redirectIfNotLoggedIn, (req, res) => {
     res.render("index");
 });
 
-router.get("/products", async (req, res) => {
+router.get("/products", redirectIfNotLoggedIn, async (req, res) => {
     try {
         const { limit, page, sort, query } = req.query;
 
@@ -49,7 +55,7 @@ router.get("/products", async (req, res) => {
     }
 });
 
-router.get("/realtimeproducts", async (req, res) => {
+router.get("/realtimeproducts", redirectIfNotLoggedIn, async (req, res) => {
     try {
         res.render("realtimeproducts");
     } catch (error) {
@@ -59,11 +65,11 @@ router.get("/realtimeproducts", async (req, res) => {
     }
 });
 
-router.get("/chat", (req, res) => {
+router.get("/chat", redirectIfNotLoggedIn, (req, res) => {
     res.render("chat");
 });
 
-router.get("/carts", async (req, res) => {
+router.get("/carts", redirectIfNotLoggedIn, async (req, res) => {
     try {
         const carts = await cartManager.getAllCarts();
         const cartsObjects = carts.map(cart => cart.toObject ? cart.toObject() : cart);
@@ -74,9 +80,7 @@ router.get("/carts", async (req, res) => {
     }
 });
 
-
-
-router.get("/carts/:cid", async (req, res) => {
+router.get("/carts/:cid", redirectIfNotLoggedIn, async (req, res) => {
     try {
         const cart = await cartManager.getCart(req.params.cid);
         if (cart) {
@@ -89,6 +93,18 @@ router.get("/carts/:cid", async (req, res) => {
         console.error("Error al obtener el carrito por ID...", error);
         res.status(404).render('error', { message: "Carrito no encontrado" });
     }
+});
+
+router.get("/login", redirectIfLoggedIn, (req, res) => {
+    res.render("login", { title: "Iniciar Sesión" });
+});
+
+router.get("/register", redirectIfLoggedIn, (req, res) => {
+    res.render("register", { title: "Registrarse" }); 
+});
+
+router.get('/profile', redirectIfNotLoggedIn, (req, res) => {
+    res.render('profile', { user: req.session.user });
 });
 
 module.exports = router;
