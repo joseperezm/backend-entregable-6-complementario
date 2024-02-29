@@ -154,3 +154,13 @@ form {
 .upperBorder {
     margin-top: 80px;  
 }
+
+.list-group-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.product-info {
+    flex-grow: 1;
+}
