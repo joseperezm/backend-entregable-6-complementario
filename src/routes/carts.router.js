@@ -107,6 +107,20 @@ router.delete("/carts/:cid", async (req, res) => {
     }
 });
 
+router.delete("/carts/:cid/delete", async (req, res) => {
+    try {
+        const success = await cartManager.deleteCart(req.params.cid);
+        if (success) {
+            res.json({ message: "Carrito eliminado correctamente" });
+        } else {
+            res.status(404).json({ message: "Carrito no encontrado" });
+        }
+    } catch (error) {
+        console.error("Error al eliminar el carrito...", error);
+        res.status(500).json({ error: "Error del servidor" });
+    }
+});
+
 router.delete("/carts/:cid/product/:pid", async (req, res) => {
     try {
         const { success, message, cart } = await cartManager.deleteProductFromCart(req.params.cid, req.params.pid);
