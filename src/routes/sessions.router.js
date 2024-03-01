@@ -3,7 +3,29 @@ const bcrypt = require('bcrypt');
 const User = require('../dao/models/user-mongoose');
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+const redirectIfNotLoggedIn = require('../middleware/auth.js');
+const redirectIfLoggedIn = require('../middleware/loggedIn.js');
+const redirectIfLoggedInApi = require('../middleware/loggedInApi.js');
+
+router.get('/register', redirectIfLoggedInApi, (req, res) => {
+    const registrationInstructions = {
+        steps: [
+            "Open Postman or your preferred HTTP client.",
+            "Set the request method to POST.",
+            "Set the request URL to the endpoint for registration. For example, 'http://localhost:8080/api/sessions/register' if you are running your server locally.",
+            "Go to the 'Headers' tab and add a header with key 'Content-Type' and value 'application/json'.",
+            "Go to the 'Body' tab, select 'raw', and then select 'JSON' from the dropdown menu.",
+            "Enter your registration details in JSON format. For example: {\"first_name\": \"John\", \"last_name\": \"Doe\", \"email\": \"johndoe@example.com\", \"age\": 30, \"password\": \"your_password\"}.",
+            "Send the request.",
+            "If the registration is successful, you should be redirected to the login page or receive a success message. You can now log in with the credentials you registered."
+        ],
+        note: "Replace the example details with your actual registration information."
+    };
+
+    res.json(registrationInstructions);
+});
+
+router.post('/register', redirectIfLoggedIn, async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
         const role = 'usuario'; 
@@ -24,7 +46,26 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.get('/login', redirectIfLoggedIn, (req, res) => {
+    const loginInstructions = {
+        Status: "Not logged in...",
+        steps: [
+            "Open Postman or your preferred HTTP client.",
+            "Set the request method to POST.",
+            "Set the request URL to the endpoint for logging in. For example, 'http://localhost:8080/api/sessions/login' if you are running your server locally.",
+            "Go to the 'Headers' tab and add a header with key 'Content-Type' and value 'application/json'.",
+            "Go to the 'Body' tab, select 'raw', and then select 'JSON' from the dropdown menu.",
+            "Enter your login credentials in JSON format. For example: {\"email\": \"your_email@example.com\", \"password\": \"your_password\"}.",
+            "Send the request.",
+            "If login is successful, you should receive a response including a session cookie. Use this cookie for subsequent requests to authenticated routes."
+        ],
+        note: "If not registered visit 'http://localhost:8080/api/sessions/register'"
+    };
+
+    res.json(loginInstructions);
+});
+
+router.post('/login', redirectIfLoggedIn, async (req, res) => {
     const { email, password } = req.body;
 
     if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
@@ -63,7 +104,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.get("/logout", (req, res) => {
+router.get("/logout", redirectIfNotLoggedIn, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.log('Error al cerrar sesión:', err);

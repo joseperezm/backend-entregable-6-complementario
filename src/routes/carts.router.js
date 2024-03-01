@@ -7,7 +7,9 @@ const cartManagerFs = new CartManagerFs("../dao/fs/carts.json");
 const CartManager = require("../dao/db/cartManager.js");
 const cartManager = new CartManager();
 
-router.post("/carts", async (req, res) => {
+const redirectIfNotLoggedInApi = require('../middleware/authApi.js');
+
+router.post("/carts", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const cart = await cartManager.createCart();
         res.status(201).json({ cid: cart._id, message: "Carrito creado correctamente" });
@@ -17,7 +19,7 @@ router.post("/carts", async (req, res) => {
     }
 });
 
-router.get("/carts", async (req, res) => {
+router.get("/carts", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const carts = await cartManager.getAllCarts();
         res.json(carts);
@@ -27,7 +29,7 @@ router.get("/carts", async (req, res) => {
     }
 });
 
-router.get("/carts/:cid", async (req, res) => {
+router.get("/carts/:cid", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const cart = await cartManager.getCart(req.params.cid);
         if (cart) {
@@ -41,7 +43,7 @@ router.get("/carts/:cid", async (req, res) => {
     }
 });
 
-router.post("/carts/:cid/product/:pid", async (req, res) => {
+router.post("/carts/:cid/product/:pid", redirectIfNotLoggedInApi, async (req, res) => {
     const { cid, pid } = req.params;
     const { quantity = 1 } = req.body;
 
@@ -58,7 +60,7 @@ router.post("/carts/:cid/product/:pid", async (req, res) => {
     }
 });
 
-router.put("/carts/:cid", async (req, res) => {
+router.put("/carts/:cid", redirectIfNotLoggedInApi, async (req, res) => {
     const { cid } = req.params;
     const { products } = req.body;
 
@@ -76,7 +78,7 @@ router.put("/carts/:cid", async (req, res) => {
 });
 
 
-router.put("/carts/:cid/product/:pid", async (req, res) => {
+router.put("/carts/:cid/product/:pid", redirectIfNotLoggedInApi, async (req, res) => {
     const { cid, pid } = req.params;
     const { quantity } = req.body;
 
@@ -93,7 +95,7 @@ router.put("/carts/:cid/product/:pid", async (req, res) => {
     }
 });
 
-router.delete("/carts/:cid", async (req, res) => {
+router.delete("/carts/:cid", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const success = await cartManager.emptyCart(req.params.cid);
         if (success) {
@@ -107,7 +109,7 @@ router.delete("/carts/:cid", async (req, res) => {
     }
 });
 
-router.delete("/carts/:cid/delete", async (req, res) => {
+router.delete("/carts/:cid/delete", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const success = await cartManager.deleteCart(req.params.cid);
         if (success) {
@@ -121,7 +123,7 @@ router.delete("/carts/:cid/delete", async (req, res) => {
     }
 });
 
-router.delete("/carts/:cid/product/:pid", async (req, res) => {
+router.delete("/carts/:cid/product/:pid", redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const { success, message, cart } = await cartManager.deleteProductFromCart(req.params.cid, req.params.pid);
         if (success) {

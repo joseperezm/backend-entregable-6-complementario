@@ -7,7 +7,9 @@ const productManagerFs = new ProductManagerFs("../dao/fs/products.json");
 const ProductManager = require("../dao/db/productManager");
 const productManager = new ProductManager();
 
-router.get('/products', async (req, res) => {
+const redirectIfNotLoggedInApi = require('../middleware/authApi.js');
+
+router.get('/products', redirectIfNotLoggedInApi, async (req, res) => {
     const limit = req.query.limit === undefined ? 10 : parseInt(req.query.limit, 10);
     const page = parseInt(req.query.page) || 1;
     const sort = req.query.sort;
@@ -40,7 +42,7 @@ router.get('/products', async (req, res) => {
     }
 });
 
-router.get('/products/:pid', async (req, res) => {
+router.get('/products/:pid', redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const product = await productManager.getProductById(req.params.pid);
 
@@ -54,7 +56,7 @@ router.get('/products/:pid', async (req, res) => {
     }
 });
 
-router.post('/products', async (req, res) => {
+router.post('/products', redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const newProduct = req.body;
         const product = await productManager.addProduct(newProduct);
@@ -64,7 +66,7 @@ router.post('/products', async (req, res) => {
     }
 });
 
-router.put('/products/:id', async (req, res) => {
+router.put('/products/:id', redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const updatedProduct = await productManager.updateProduct(req.params.id, req.body);
 
@@ -78,7 +80,7 @@ router.put('/products/:id', async (req, res) => {
     }
 });
 
-router.delete('/products/:pid', async (req, res) => {
+router.delete('/products/:pid', redirectIfNotLoggedInApi, async (req, res) => {
     try {
         const success = await productManager.deleteProduct(req.params.pid);
         
