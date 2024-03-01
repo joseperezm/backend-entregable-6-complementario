@@ -9,6 +9,7 @@ const redirectIfLoggedInApi = require('../middleware/loggedInApi.js');
 
 router.get('/register', redirectIfLoggedInApi, (req, res) => {
     const registrationInstructions = {
+        Status: "Not logged in...",
         steps: [
             "Open Postman or your preferred HTTP client.",
             "Set the request method to POST.",
