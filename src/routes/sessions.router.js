@@ -26,7 +26,7 @@ router.get('/register', redirectIfLoggedInApi, (req, res) => {
     res.json(registrationInstructions);
 });
 
-router.post('/register', redirectIfLoggedIn, async (req, res) => {
+router.post('/register', redirectIfLoggedInApi, async (req, res) => {
     try {
         const { first_name, last_name, email, age, password } = req.body;
         const role = 'usuario'; 
@@ -43,7 +43,7 @@ router.post('/register', redirectIfLoggedIn, async (req, res) => {
         res.redirect('/login');
     } catch (error) {
         console.log('Error al registrar el usuario:', error);
-        res.status(500).send('Error al registrar el usuario');
+        res.status(500).send('Error al registrar el usuario: ' + error.message);
     }
 });
 
@@ -101,7 +101,7 @@ router.post('/login', redirectIfLoggedIn, async (req, res) => {
         }
     } catch (error) {
         console.log('Error al iniciar sesión:', error);
-        res.status(500).send('Error al iniciar sesión');
+        res.status(500).send('Error al iniciar sesión: ' + error.message);
     }
 });
 
@@ -109,7 +109,7 @@ router.get("/logout", redirectIfNotLoggedIn, (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.log('Error al cerrar sesión:', err);
-            res.status(500).send('Error al cerrar sesión');
+            res.status(500).send('Error al cerrar sesión: ' + error.message);
         } else {
             res.clearCookie('connect.sid', {path: '/'}); 
             res.redirect('/login'); 
